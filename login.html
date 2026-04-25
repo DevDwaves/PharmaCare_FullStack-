@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PharmaCare — Login</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg-gradient-1:#667eea;--bg-gradient-2:#764ba2;
+  --card-bg:#fff;--card-text:#1e293b;--card-border:#e2e8f0;
+  --label-color:#475569;--placeholder-color:#cbd5e1;--muted:#64748b;
+  --tab-bg:#f8fafc;--input-bg:#f8fafc;--toggle-bg:#e2e8f0;
+}
+body.dark-mode{
+  --bg-gradient-1:#1a1a2e;--bg-gradient-2:#16213e;
+  --card-bg:#0f172a;--card-text:#f1f5f9;--card-border:#334155;
+  --label-color:#cbd5e1;--placeholder-color:#64748b;--muted:#94a3b8;
+  --tab-bg:#1e293b;--input-bg:#1e293b;--toggle-bg:#334155;
+}
+body{
+  font-family:'Segoe UI','Segoe UI',Roboto,-apple-system,BlinkMacSystemFont,sans-serif;
+  background:linear-gradient(135deg,var(--bg-gradient-1) 0%,var(--bg-gradient-2) 100%);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  transition:background .3s ease;
+}
+.page{display:none;} .page.active{display:block;}
+.container{width:500px;max-width:95vw;}
+.brand{text-align:center;margin-bottom:40px;color:#fff;}
+.brand .logo{
+  font-size:64px;display:block;margin-bottom:14px;
+  background:rgba(255,255,255,0.2);
+  width:100px;height:100px;
+  border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 14px;
+  box-shadow:0 8px 32px rgba(31,38,135,.2);
+  backdrop-filter:blur(4px);
+  border:1px solid rgba(255,255,255,0.2);
+}
+.brand h1{font-size:28px;font-weight:700;margin-bottom:6px;letter-spacing:-0.5px;}
+.brand p{font-size:14px;opacity:0.9;font-weight:500;}
+.card{
+  background:var(--card-bg);border-radius:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+  padding:40px;
+  backdrop-filter:blur(10px);
+  transition:background .3s ease,border-color .3s ease;
+  position:relative;
+}
+.theme-toggle{
+  position:absolute;top:20px;right:20px;
+  background:var(--toggle-bg);border:none;
+  padding:8px 12px;border-radius:8px;cursor:pointer;
+  font-size:18px;transition:all .2s ease;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+.theme-toggle:hover{transform:scale(1.1);}
+.tab-row{display:flex;gap:0;margin-bottom:32px;background:var(--tab-bg);border-radius:12px;overflow:hidden;padding:4px;transition:background .3s ease;}
+.tab-btn{
+  flex:1;padding:12px 18px;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;background:transparent;
+  color:var(--muted);transition:all .2s ease;border-radius:10px;
+}
+.tab-btn.active{background:var(--card-bg);color:#667eea;box-shadow:0 4px 12px rgba(102,126,234,.15);}
+.tab-btn:hover:not(.active){color:#475569;}
+.form-group{margin-bottom:20px;}
+.form-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--label-color);text-transform:uppercase;letter-spacing:.5px;
+  margin-bottom:8px;transition:color .3s ease;
+}
+.form-group input{
+  width:100%;padding:12px 16px;
+  border:2px solid var(--card-border);border-radius:10px;
+  font-family:inherit;font-size:14px;color:var(--card-text);
+  outline:none;transition:all .15s;
+  background:var(--input-bg);
+}
+.form-group input::placeholder{color:var(--placeholder-color);}
+.form-group input:focus{
+  border-color:#667eea;background:#fff;
+  box-shadow:0 0 0 3px rgba(102,126,234,.1);
+}
+.form-group small{font-size:12px;color:#94a3b8;margin-top:6px;display:block;}
+.btn{
+  width:100%;padding:13px 16px;
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  color:#fff;border:none;border-radius:10px;
+  font-family:inherit;font-size:14px;font-weight:600;
+  cursor:pointer;margin-top:8px;
+  transition:all .2s ease;
+  box-shadow:0 4px 15px rgba(102,126,234,.3);
+}
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(102,126,234,.4);
+}
+.btn:active{transform:translateY(0);}
+.btn-outline{
+  background:transparent;border:2px solid #e2e8f0;
+  color:#64748b;margin-top:10px;box-shadow:none;
+}
+.btn-outline:hover{border-color:#667eea;color:#667eea;background:rgba(102,126,234,.05);}
+.error{
+  background:#fee2e2;color:#dc2626;border-radius:10px;
+  padding:12px 16px;font-size:13px;margin-bottom:14px;
+  display:none;border-left:4px solid #dc2626;
+}
+.success{
+  background:#dcfce7;color:#16a34a;border-radius:10px;
+  padding:12px 16px;font-size:13px;margin-bottom:14px;
+  display:none;border-left:4px solid #16a34a;
+}
+.divider{border:none;border-top:1px solid #e2e8f0;margin:24px 0;}
+.hint{text-align:center;font-size:12px;color:var(--muted);margin-top:18px;transition:color .3s ease;}
+.hint span{font-weight:700;color:#667eea;}
+.form-group small{color:var(--muted);transition:color .3s ease;}
+.divider{border-top-color:var(--card-border);transition:border-color .3s ease;}
+p{color:var(--muted);transition:color .3s ease;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="brand">
+    <div class="logo">💊</div>
+    <h1>Pharmacy Management System</h1>
+    <p>PharmaCare Administration</p>
+  </div>
+
+  <div class="card">
+    <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Toggle Dark Mode">🌙</button>
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchTab('login')">👤 Login</button>
+      <button class="tab-btn" onclick="switchTab('register')">✨ Register</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="tab-login" class="page active">
+      <div class="error" id="login-err"></div>
+      <div class="form-group">
+        <label>👤 USERNAME</label>
+        <input type="text" id="l-user" placeholder="Enter your username" value="admin">
+      </div>
+      <div class="form-group">
+        <label>🔐 PASSWORD</label>
+        <input type="password" id="l-pass" placeholder="Enter your password" value="admin"
+          onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <button class="btn" onclick="doLogin()">🚀 Login</button>
+      <div class="hint">Demo: <span>admin</span> / <span>admin</span></div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="tab-register" class="page">
+      <div class="error" id="reg-err"></div>
+      <div class="success" id="reg-ok"></div>
+      <div class="form-group">
+        <label>🏥 Pharmacy / Business Name</label>
+        <input type="text" id="r-biz" placeholder="e.g. LifeCare Pharmacy">
+        <small>This will be used as your database name (spaces replaced with _)</small>
+      </div>
+      <div class="form-group">
+        <label>👤 Username</label>
+        <input type="text" id="r-user" placeholder="Choose a username">
+      </div>
+      <div class="form-group">
+        <label>🔐 Password</label>
+        <input type="password" id="r-pass" placeholder="Choose a password">
+      </div>
+      <div class="form-group">
+        <label>✓ Confirm Password</label>
+        <input type="password" id="r-pass2" placeholder="Repeat password"
+          onkeydown="if(event.key==='Enter') doRegister()">
+      </div>
+      <hr class="divider">
+      <p style="font-size:12px;margin-bottom:16px;font-weight:500;color:var(--muted);">MySQL Connection</p>
+      <div class="form-group">
+        <label>🗄️ MySQL Username</label>
+        <input type="text" id="r-dbuser" placeholder="root" value="root">
+      </div>
+      <div class="form-group">
+        <label>🔑 MySQL Password</label>
+        <input type="password" id="r-dbpass" placeholder="Your MySQL password" value="123456">
+      </div>
+      <button class="btn" onclick="doRegister()">✅ Create Account & Database</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Dark Mode Theme Toggle
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark-mode');
+  const btn = document.getElementById('theme-btn');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  btn.textContent = isDark ? '☀️' : '🌙';
+}
+
+function loadTheme() {
+  const theme = localStorage.getItem('theme') || 'light';
+  const btn = document.getElementById('theme-btn');
+  if (theme === 'dark') {
+    document.body.classList.add('dark-mode');
+    btn.textContent = '☀️';
+  } else {
+    document.body.classList.remove('dark-mode');
+    btn.textContent = '🌙';
+  }
+}
+
+// Load theme on page load
+window.addEventListener('DOMContentLoaded', loadTheme);
+
+function switchTab(tab) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function showErr(id, msg) {
+  const el=document.getElementById(id);
+  el.textContent=msg; el.style.display='block';
+  setTimeout(()=>el.style.display='none', 4000);
+}
+
+function showOk(id, msg) {
+  const el=document.getElementById(id);
+  el.textContent=msg; el.style.display='block';
+}
+
+async function doLogin() {
+  const username=document.getElementById('l-user').value.trim();
+  const password=document.getElementById('l-pass').value;
+  if(!username||!password){showErr('login-err','Please enter username and password');return;}
+  try {
+    const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+    const data=await res.json();
+    if(data.success){
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('username', data.username);
+      sessionStorage.setItem('dbName', data.dbName);
+      window.location.href='/index.html';
+    } else {
+      showErr('login-err', data.error || 'Login failed');
+    }
+  } catch(e) { showErr('login-err','Server error. Is the server running?'); }
+}
+
+async function doRegister() {
+  const biz   = document.getElementById('r-biz').value.trim();
+  const uname = document.getElementById('r-user').value.trim();
+  const pass  = document.getElementById('r-pass').value;
+  const pass2 = document.getElementById('r-pass2').value;
+  const dbUser= document.getElementById('r-dbuser').value.trim();
+  const dbPass= document.getElementById('r-dbpass').value;
+
+  if(!biz||!uname||!pass) return showErr('reg-err','All fields are required');
+  if(pass!==pass2) return showErr('reg-err','Passwords do not match');
+  if(pass.length<4) return showErr('reg-err','Password must be at least 4 characters');
+
+  const dbName = biz.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase() + '_db';
+
+  try {
+    const res=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:uname,password:pass,dbName,dbUser,dbPass})});
+    const data=await res.json();
+    if(data.success){
+      showOk('reg-ok', `Account created! Database "${data.dbName}" is ready. Logging you in...`);
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('username', data.username);
+      sessionStorage.setItem('dbName', data.dbName);
+      setTimeout(()=>window.location.href='/index.html', 1800);
+    } else {
+      showErr('reg-err', data.error || 'Registration failed');
+    }
+  } catch(e) { showErr('reg-err','Server error'); }
+}
+</script>
+</body>
+</html>

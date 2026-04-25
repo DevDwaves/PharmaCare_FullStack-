@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>PharmaCare — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-header">
+    <span class="logo">💊</span>
+    <h2>PharmaCare</h2>
+    <p>Management System</p>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-section">Overview</div>
+    <button class="nav-link active" data-page="dashboard"  onclick="navigate('dashboard')">🏠 &nbsp;Dashboard</button>
+    <div class="nav-section">Inventory</div>
+    <button class="nav-link" data-page="medicines"  onclick="navigate('medicines')">💊 &nbsp;Medicines</button>
+    <button class="nav-link" data-page="categories" onclick="navigate('categories')">🏷️ &nbsp;Categories</button>
+    <button class="nav-link" data-page="suppliers"  onclick="navigate('suppliers')">🚚 &nbsp;Suppliers</button>
+    <div class="nav-section">Business</div>
+    <button class="nav-link" data-page="customers"  onclick="navigate('customers')">👥 &nbsp;Customers</button>
+    <button class="nav-link" data-page="sales"      onclick="navigate('sales')">🧾 &nbsp;Sales</button>
+    <button class="nav-link" data-page="analytics"  onclick="navigate('analytics')">📈 &nbsp;Analytics</button>
+  </nav>
+  <div class="sb-footer">
+    PharmaCare v1.5 · Web Dev Project<br>
+    Devansh Verma · Shourya · Nilay
+  </div>
+</aside>
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <h1 id="page-title">🏠 Dashboard</h1>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:14px">
+      <span id="current-date" style="font-size:12px;color:var(--muted)"></span>
+      <span style="font-size:12px;color:var(--muted)">👤 <span id="current-user"></span></span>
+      <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Dark Mode">🌙</button>
+      <button onclick="doLogout()"
+        style="padding:5px 12px;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">
+        Logout
+      </button>
+    </div>
+  </header>
+  <div class="content">
+    <!-- DASHBOARD -->
+    <div id="pg-dashboard" class="page active">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+        <div class="stat-card"><div class="stat-icon si-blue">💊</div><div class="stat-info"><div class="stat-value" id="s-meds">—</div><div class="stat-label">Total Medicines</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-orange">⚠️</div><div class="stat-info"><div class="stat-value" id="s-low">—</div><div class="stat-label">Low Stock</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red">❌</div><div class="stat-info"><div class="stat-value" id="s-exp">—</div><div class="stat-label">Expired</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">💰</div><div class="stat-info"><div class="stat-value" id="s-rev">—</div><div class="stat-label">Total Revenue</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-purple">👥</div><div class="stat-info"><div class="stat-value" id="s-cust">—</div><div class="stat-label">Customers</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-teal">🧾</div><div class="stat-info"><div class="stat-value" id="s-bills">—</div><div class="stat-label">Total Bills</div></div></div>
+      </div>
+      <div class="dash-grid" style="margin-bottom:16px">
+        <div class="card"><div class="card-header"><h3>📊 Monthly Revenue</h3></div><div class="card-body"><div class="chart-wrap" id="month-chart" style="height:130px"></div></div></div>
+        <div class="card"><div class="card-header"><h3>🏷️ By Category</h3></div><div class="card-body"><div class="chart-wrap" id="cat-chart" style="height:130px"></div></div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-header"><h3>🕒 Recent Sales</h3><button class="btn btn-outline btn-sm" onclick="navigate('sales')">View All →</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Customer</th><th>Amount</th><th>Payment</th><th>Date</th></tr></thead><tbody id="recent-sales-body"><tr><td colspan="5" style="padding:20px;text-align:center;color:#94a3b8">Loading...</td></tr></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>⏰ Expiring Soon</h3></div>
+          <div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Qty</th><th>Expiry</th><th>Status</th></tr></thead><tbody id="expiring-body"><tr><td colspan="4" style="padding:20px;text-align:center;color:#94a3b8">Loading...</td></tr></tbody></table></div>
+        </div>
+      </div>
+    </div>
+    <!-- MEDICINES -->
+    <div id="pg-medicines" class="page">
+      <div class="toolbar">
+        <button class="btn btn-primary" onclick="openAddMed()">+ Add Medicine</button>
+        <div class="search-box"><span>🔍</span><input type="text" id="med-search" placeholder="Search medicines..." oninput="loadMedicines()"></div>
+      </div>
+      <div class="card"><div class="table-wrap"><table>
+        <thead><tr><th>Name / Generic</th><th>Category</th><th>Supplier</th><th>Stock</th><th>Price</th><th>Expiry</th><th>Actions</th></tr></thead>
+        <tbody id="medicines-body"><tr><td colspan="7" style="padding:20px;text-align:center;color:#94a3b8">Loading...</td></tr></tbody>
+      </table></div></div>
+    </div>
+    <!-- CATEGORIES -->
+    <div id="pg-categories" class="page">
+      <div class="toolbar"><button class="btn btn-primary" onclick="openModal('cat-modal')">+ Add Category</button></div>
+      <div class="card"><div class="table-wrap"><table>
+        <thead><tr><th>Name</th><th>Description</th><th>Medicines</th><th>Action</th></tr></thead>
+        <tbody id="cat-body"></tbody>
+      </table></div></div>
+    </div>
+    <!-- SUPPLIERS -->
+    <div id="pg-suppliers" class="page">
+      <div class="toolbar"><button class="btn btn-primary" onclick="openModal('sup-modal')">+ Add Supplier</button></div>
+      <div class="card"><div class="table-wrap"><table>
+        <thead><tr><th>Name</th><th>Contact</th><th>Phone</th><th>Email</th><th>Address</th><th>Medicines</th><th>Action</th></tr></thead>
+        <tbody id="sup-body"></tbody>
+      </table></div></div>
+    </div>
+    <!-- CUSTOMERS -->
+    <div id="pg-customers" class="page">
+      <div class="toolbar">
+        <button class="btn btn-primary" onclick="openModal('cus-modal')">+ Add Customer</button>
+        <div class="search-box"><span>🔍</span><input type="text" id="cus-search" placeholder="Search customers..." oninput="loadCustomers()"></div>
+      </div>
+      <div class="card"><div class="table-wrap"><table>
+        <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th>Orders</th><th>Total Spent</th><th>Action</th></tr></thead>
+        <tbody id="cus-body"></tbody>
+      </table></div></div>
+    </div>
+    <!-- SALES -->
+    <div id="pg-sales" class="page">
+      <div class="toolbar"><button class="btn btn-success" onclick="openNewSale()">+ New Sale</button></div>
+      <div class="card"><div class="table-wrap"><table>
+        <thead><tr><th>Invoice</th><th>Customer</th><th>Total</th><th>Discount</th><th>Net</th><th>Payment</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody id="sales-body"></tbody>
+      </table></div></div>
+    </div>
+    <!-- ANALYTICS -->
+    <div id="pg-analytics" class="page">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div>
+          <h2 style="margin:0 0 8px 0">📊 Analytics Dashboard</h2>
+          <p style="margin:0;color:#94a3b8;font-size:13px">Tuesday, 14 April 2026</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="display:flex;gap:4px;background:var(--card);padding:4px;border-radius:6px">
+            <button class="btn btn-outline btn-sm" style="background:var(--accent);color:white" id="view-day">By Day (last 30)</button>
+            <button class="btn btn-outline btn-sm" id="view-month">By Month</button>
+            <button class="btn btn-outline btn-sm" id="view-year">By Year</button>
+          </div>
+          <div style="display:flex;gap:4px;background:var(--card);padding:4px;border-radius:6px">
+            <button class="btn btn-outline btn-sm chart-type-btn active" data-type="bar" style="background:var(--accent);color:white">● Bar</button>
+            <button class="btn btn-outline btn-sm chart-type-btn" data-type="line">— Line</button>
+            <button class="btn btn-outline btn-sm chart-type-btn" data-type="area">⊞ Area</button>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="location.reload()" title="Refresh">🔄 Refresh</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="card">
+          <div class="card-header"><h3>📈 Monthly Revenue</h3></div>
+          <div class="card-body"><div class="chart-wrap" id="analytics-month-chart" style="height:220px"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>💳 Revenue by Payment</h3></div>
+          <div class="card-body"><div class="chart-wrap" id="analytics-payment-chart" style="height:220px"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>🏷️ Revenue by Category</h3></div>
+        <div class="card-body"><div class="chart-wrap" id="analytics-category-chart" style="height:200px"></div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-header"><h3>🕒 All Past Sales</h3></div>
+        <div class="table-wrap" style="max-height:400px;overflow-y:auto"><table>
+          <thead><tr><th>Invoice</th><th>Date & Time</th><th>Customer</th><th>Items</th><th>Total</th><th>Discount</th><th>Net Amount</th><th>Payment</th><th>Action</th></tr></thead>
+          <tbody id="analytics-sales-body"><tr><td colspan="9" style="padding:20px;text-align:center;color:#94a3b8">Loading...</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: Medicine -->
+<div class="overlay" id="med-modal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="med-modal-title">Add Medicine</h3><button class="modal-close" onclick="closeModal('med-modal')">✕</button></div>
+    <div class="modal-body"><form id="med-form"><div class="form-grid">
+      <div class="form-group span2"><label>Medicine Name *</label><input type="text" id="med-name" required placeholder="e.g. Augmentin 625"></div>
+      <div class="form-group"><label>Generic Name</label><input type="text" id="med-generic" placeholder="e.g. Amoxicillin"></div>
+      <div class="form-group"><label>Batch No.</label><input type="text" id="med-batch"></div>
+      <div class="form-group"><label>Category</label><select id="med-cat"></select></div>
+      <div class="form-group"><label>Supplier</label><select id="med-sup"></select></div>
+      <div class="form-group"><label>Manufacture Date</label><input type="date" id="med-mfg"></div>
+      <div class="form-group"><label>Expiry Date *</label><input type="date" id="med-exp" required></div>
+      <div class="form-group"><label>Quantity</label><input type="number" id="med-qty" min="0" value="0"></div>
+      <div class="form-group"><label>Purchase Price (₹)</label><input type="number" id="med-pp" step="0.01" placeholder="0.00"></div>
+      <div class="form-group"><label>Selling Price (₹)</label><input type="number" id="med-sp" step="0.01" placeholder="0.00"></div>
+      <div class="form-group span2"><label>Description</label><textarea id="med-desc" placeholder="Usage, dosage..."></textarea></div>
+    </div></form></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('med-modal')">Cancel</button><button class="btn btn-primary" onclick="saveMed()">💾 Save</button></div>
+  </div>
+</div>
+
+<!-- MODAL: Category -->
+<div class="overlay" id="cat-modal">
+  <div class="modal" style="width:400px">
+    <div class="modal-header"><h3>Add Category</h3><button class="modal-close" onclick="closeModal('cat-modal')">✕</button></div>
+    <div class="modal-body"><form id="cat-form">
+      <div class="form-group" style="margin-bottom:12px"><label>Name *</label><input type="text" id="cat-name" placeholder="e.g. Antibiotics"></div>
+      <div class="form-group"><label>Description</label><textarea id="cat-desc" placeholder="What this category covers..."></textarea></div>
+    </form></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('cat-modal')">Cancel</button><button class="btn btn-primary" onclick="addCat()">💾 Save</button></div>
+  </div>
+</div>
+
+<!-- MODAL: Supplier -->
+<div class="overlay" id="sup-modal">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Supplier</h3><button class="modal-close" onclick="closeModal('sup-modal')">✕</button></div>
+    <div class="modal-body"><form id="sup-form"><div class="form-grid">
+      <div class="form-group span2"><label>Company Name *</label><input type="text" id="sup-name" placeholder="Company name"></div>
+      <div class="form-group"><label>Contact Person</label><input type="text" id="sup-contact"></div>
+      <div class="form-group"><label>Phone</label><input type="tel" id="sup-phone"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="sup-email"></div>
+      <div class="form-group"><label>Address</label><input type="text" id="sup-address"></div>
+    </div></form></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('sup-modal')">Cancel</button><button class="btn btn-primary" onclick="addSup()">💾 Save</button></div>
+  </div>
+</div>
+
+<!-- MODAL: Customer -->
+<div class="overlay" id="cus-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header"><h3>Add Customer</h3><button class="modal-close" onclick="closeModal('cus-modal')">✕</button></div>
+    <div class="modal-body"><form id="cus-form"><div class="form-grid">
+      <div class="form-group span2"><label>Full Name *</label><input type="text" id="cus-name" placeholder="Customer name"></div>
+      <div class="form-group"><label>Phone</label><input type="tel" id="cus-phone"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="cus-email"></div>
+      <div class="form-group span2"><label>Address</label><textarea id="cus-address" style="min-height:55px"></textarea></div>
+    </div></form></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('cus-modal')">Cancel</button><button class="btn btn-primary" onclick="addCus()">💾 Save</button></div>
+  </div>
+</div>
+
+<!-- MODAL: New Sale -->
+<div class="overlay" id="new-sale-modal">
+  <div class="modal" style="width:620px">
+    <div class="modal-header"><h3>🧾 New Sale</h3><button class="modal-close" onclick="closeModal('new-sale-modal')">✕</button></div>
+    <div class="modal-body"><form id="sale-form">
+      <div class="form-grid" style="margin-bottom:14px">
+        <div class="form-group"><label>Customer</label><select id="sale-customer"></select></div>
+        <div class="form-group"><label>Payment Method</label>
+          <select id="sale-payment"><option value="cash">💵 Cash</option><option value="card">💳 Card</option><option value="upi">📱 UPI</option></select>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <strong style="font-size:13.5px">Items</strong>
+        <button type="button" class="btn btn-outline btn-sm" onclick="addSaleRow()">+ Add Item</button>
+      </div>
+      <div id="sale-items-list"></div>
+      <div class="sale-total-box">
+        <div class="tot-row"><span style="color:#64748b">Subtotal</span><span id="sale-total-display" class="mono">₹0.00</span></div>
+        <div class="tot-row">
+          <label style="font-size:13px">Discount (₹)</label>
+          <input type="number" id="sale-discount" min="0" step="0.01" value="0"
+            style="width:100px;text-align:right;padding:4px 8px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px"
+            oninput="calcTotal()">
+        </div>
+        <div class="tot-row final"><span>Net Amount</span><span id="sale-net-display" class="mono">₹0.00</span></div>
+      </div>
+    </form></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('new-sale-modal')">Cancel</button><button class="btn btn-success" onclick="confirmSale()">✅ Confirm Sale</button></div>
+  </div>
+</div>
+
+<!-- MODAL: View Sale -->
+<div class="overlay" id="view-sale-modal">
+  <div class="modal" style="width:480px">
+    <div class="modal-header"><h3>Invoice: <span id="view-inv-no" class="mono" style="font-size:13px;color:#2563eb"></span></h3><button class="modal-close" onclick="closeModal('view-sale-modal')">✕</button></div>
+    <div class="modal-body" style="padding:0"><table>
+      <thead><tr><th>Medicine</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+      <tbody id="view-items-body"></tbody>
+    </table></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('view-sale-modal')">Close</button></div>
+  </div>
+</div>
+
+<div id="toast-zone"></div>
+<script src="js/app.js"></script>
+</body>
+</html>
