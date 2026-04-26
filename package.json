@@ -1,0 +1,8 @@
+{
+  "name": "pharmacy-web",
+  "version": "1.0.0",
+  "description": "Pharmacy Management System - Web Dev Project",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "mysql2": "^3.9.1" }
+}
