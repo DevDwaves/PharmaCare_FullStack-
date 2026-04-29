@@ -1,0 +1,34 @@
+import math
+def mm1_finite(lam, mu, s): """
+M/M/1:(s/FIFO) - Single Server Queue with Finite Capacity Parameters:
+lam : arrival rate (lambda) mu : service rate (mu)
+s : maximum system capacity
+"""
+rho = lam / mu
+print(f'\nM/M/1:(s/FIFO) Queueing Model Analysis') print(f'Arrival Rate (lambda) = {lam}') print(f'Service Rate (mu) = {mu}') print(f'System Capacity (s) = {s}') print(f'Traffic Intensity (rho) = {rho:.4f}') print('-' * 50)
+# Steady-state probabilities
+if abs(rho - 1.0) < 1e-9: # rho == 1 case P0 = 1.0 / (s + 1)
+Pn = [P0] * (s + 1)
+else:
+P0 = (1 - rho) / (1 - rho ** (s + 1))
+Pn = [P0 * (rho ** n) for n in range(s + 1)]
+Ps = Pn[s] # Blocking probability
+lam_eff = lam * (1 - Ps) # Effective arrival rate
+# Performance measures
+L = sum(n * Pn[n] for n in range(s + 1)) # Expected number in system
+Lq = L - (1 - P0) # Expected number in queue
+W = L / lam_eff if lam_eff > 0 else 0 # Expected time in system
+Wq = Lq / lam_eff if lam_eff > 0 else 0 # Expected wait in queue
+print('\nSteady-State Probabilities:') for n in range(s + 1):
+print(f' P({n}) = {Pn[n]:.6f}')
+6
+print('\nPerformance Metrics:')
+print(f' Blocking Probability Ps = {Ps:.6f}') print(f' Effective Arrival Rate leff = {lam_eff:.4f}') print(f' Expected # in System L = {L:.4f}') print(f' Expected # in Queue Lq = {Lq:.4f}') print(f' Expected Time in System W = {W:.4f}') print(f' Expected Wait in Queue Wq = {Wq:.4f}')
+return {'P0': P0, 'Pn': Pn, 'Ps': Ps, 'L': L, 'Lq': Lq, 'W': W, 'Wq': Wq}
+if name == ' main ':
+print('=== M/M/1:(s/FIFO) Single Server Finite Queue Calculator ===')
+lam = float(input('Enter arrival rate (lambda): ')) mu = float(input('Enter service rate (mu): ')) s = int(input('Enter system capacity (s): '))
+if lam <= 0 or mu <= 0 or s <= 0:
+print('Error: All parameters must be positive.')
+else:
+results = mm1_finite(lam, mu, s)
